@@ -28,6 +28,9 @@ public:
   * A helper method to calculate Jacobians.
   */
   MatrixXd CalculateJacobian(const VectorXd& x_state);
+  
+    
+  VectorXd Polar2Cartesian(float angle, float distance,float velocity);
 
 };
 

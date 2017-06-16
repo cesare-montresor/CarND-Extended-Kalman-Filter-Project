@@ -29,7 +29,13 @@ public:
   /**
   * Kalman Filter update and prediction math lives in here.
   */
+  void Init(const MeasurementPackage &measurement_pack);
+  void Init();
+
+    
   KalmanFilter ekf_;
+  Tools tools_;
+    
 
 private:
   // check whether the tracking toolbox was initialized or not (first measurement)
@@ -43,7 +49,10 @@ private:
   Eigen::MatrixXd R_laser_;
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
-  Eigen::MatrixXd Hj_;
+  Eigen::MatrixXd H_radar_;
+    
+  float noise_ax;
+  float noise_ay;
 };
 
 #endif /* FusionEKF_H_ */
