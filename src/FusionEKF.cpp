@@ -63,6 +63,7 @@ void FusionEKF::Init(const MeasurementPackage &measurement_pack){
   } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
     x << measurement_pack.raw_measurements_[0],measurement_pack.raw_measurements_[1],0,0;
   }
+  x << 1,1,1,1;
 
   //state covariance matrix P
   MatrixXd P = MatrixXd(4, 4);
@@ -96,8 +97,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   VectorXd measures = measurement_pack.raw_measurements_;
   MeasurementPackage::SensorType type = measurement_pack.sensor_type_;
   
-  cout<<"sensor_type: "<<measurement_pack.sensor_type_<<"\n";
-  cout<<"raw_measurements: "<<measurement_pack.raw_measurements_<<"\n";
+  //cout<<"sensor_type: "<<measurement_pack.sensor_type_<<"\n";
+  //cout<<"raw_measurements: "<<measurement_pack.raw_measurements_<<"\n";
   
   /*****************************************************************************
    *  Initialization
@@ -134,7 +135,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   ekf_.F_(1, 3) = dt;
   
   //set the process covariance matrix Q
-  ekf_.Q_ = MatrixXd(4, 4);
+  //ekf_.Q_ = MatrixXd(4, 4);
   ekf_.Q_ <<
   dt_4/4*noise_ax, 0, dt_3/2*noise_ax, 0,
   0, dt_4/4*noise_ay, 0, dt_3/2*noise_ay,
@@ -167,8 +168,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     
     
   // print the output
-  cout << "x_ = " << ekf_.x_ << endl;
-  cout << "P_ = " << ekf_.P_ << endl;
+  //cout << "x_ = " << ekf_.x_ << endl;
+  //cout << "P_ = " << ekf_.P_ << endl;
 }
 
 

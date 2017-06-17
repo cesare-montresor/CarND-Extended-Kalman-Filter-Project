@@ -1,4 +1,8 @@
 #include "kalman_filter.h"
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <iostream>
+#include <math.h>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -15,6 +19,8 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   H_ = H_in;
   R_ = R_in;
   Q_ = Q_in;
+  
+  cnt = 0;
 }
 
 void KalmanFilter::Predict() {
@@ -25,6 +31,7 @@ void KalmanFilter::Predict() {
   x_ = F_ * x_;
   MatrixXd Ft = F_.transpose();
   P_ = F_ * P_ * Ft + Q_;
+  cnt++;
   
 }
 
@@ -44,14 +51,33 @@ void KalmanFilter::Update(const VectorXd &z) {
   
   //new estimate
   x_ = x_ + (K * y);
+  std::cout<<"x: \t"<<x_[0]<<"\t"<<x_[1]<<"\t"<<x_[2]<<"\t"<<x_[3]<<"\n";
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  VectorXd z_pred = H_ * x_;
+  
+  float px = x_(0);
+  float py = x_(1);
+  float vx = x_(2);
+  float vy = x_(3);
+  
+  float distance = std::pow(std::pow(px,2)+std::pow(py,2),0.5);
+  float angle = atan2f(py,px);
+  float acc = ((px*vx)+(py*vy))/distance;
+  
+  VectorXd z_pred(3);
+  z_pred << distance,angle,acc;
   VectorXd y = z - z_pred;
+  
+  while( y[1] < -M_PI || y[1] > M_PI){
+    std::cout<<"Normalizing: "<<y[1]<<"\n";
+    y[1] += 2 * M_PI * (y[1] < -M_PI?1:-1);
+  }
+  
+  
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
@@ -59,7 +85,12 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
   
   //new estimate
+  std::cout<<cnt<<":\t"<<x_[0]<<" \t"<<x_[1]<<" \t"<<x_[2]<<" \t"<<x_[3]<<" \t|\t"<<distance<<" \t "<<angle<<" \t"<<acc<<"\n";
   x_ = x_ + (K * y);
+  if ( py < 0 && px < 0 ){
+    std::cout<<cnt<<":\t"<<x_[0]<<" \t"<<x_[1]<<" \t"<<x_[2]<<" \t"<<x_[3]<<"\n";
+  }
+  
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);
   P_ = (I - K * H_) * P_;
