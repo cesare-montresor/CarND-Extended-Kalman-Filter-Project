@@ -57,7 +57,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	float c3 = (c1*c2);
  
 	//check division by zero
-	if(fabs(c1) < 0.1){
+	if(fabs(c1) < 0.00001){
         cout << "CalculateJacobian () - Error - Division by Zero" << endl;
         return Hj;
 	}
@@ -70,10 +70,15 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	return Hj;
  }
 
-VectorXd Tools::Polar2Cartesian(float angle, float distance,float velocity){
+VectorXd Tools::Polar2Cartesian(float distance,float angle,float velocity){
   VectorXd result=VectorXd(4);
+  
   float px = distance * std::cos(angle);
   float py = distance * std::sin(angle);
-  result << px, py, 0, 0;
+  float vx = velocity * std::cos(angle);
+  float vy = velocity * std::sin(angle);
+  
+  cout<<"px: \t"<<(int)px<<"\tpy: \t"<<(int)py<<"distance: \t"<<distance<<"\tangle: \t"<<angle<<"\tvelocity: \t"<<velocity<<"\n";
+  result << px, py, vx, vy;
   return result;
 }

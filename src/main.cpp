@@ -45,7 +45,7 @@ int main()
     // The 2 signifies a websocket event
     
     bool useRadar = true;
-    bool useLaser = false;
+    bool useLaser = true;
     
     if (length && length > 2 && data[0] == '4' && data[1] == '2')
     {
