@@ -38,14 +38,10 @@ FusionEKF::FusionEKF() {
     0   , 0.0009, 0,
     0   , 0     , 0.09;
     
-    //set the acceleration noise components
+  //set the acceleration noise components
   noise_ax = 9;
   noise_ay = 9;
-  /**
-  TODO:
-    * Finish initializing the FusionEKF.
-    * Set the process and measurement noises
-  */
+  
 
 
 }
