@@ -20,6 +20,7 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
   R_ = R_in;
   Q_ = Q_in;
   
+  I_ = MatrixXd::Identity(x_.size(), x_.size());
   cnt = 0;
 }
 
@@ -44,9 +45,7 @@ void KalmanFilter::Update(const VectorXd &z) {
   //new estimate
   x_ = x_ + (K * y);
   //std::cout<<cnt<<":\t"<<x_[0]<<"\t"<<x_[1]<<"\t"<<x_[2]<<"\t"<<x_[3]<<"\n";
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I_ - K * H_) * P_;
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -56,7 +55,6 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float vy = x_(3);
   
   float distance = std::pow(std::pow(px,2)+std::pow(py,2),0.5);
-  
   float angle = atan2f(py,px);
   float acc = ((px*vx)+(py*vy))/distance;
   
@@ -68,7 +66,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     //std::cout<<"Normalizing: "<<y[1]<<"\n";
     y[1] += 2 * M_PI * (y[1] < -M_PI?1:-1);
   }
-  
+  //std::cout<<cnt<<":\t"<<(int)x_[0]<<" \t "<<(int)x_[1]<<" \t "<<(int)x_[2]<<" \t "<<(int)x_[3]<<" \t | \t "<<(int)distance<<" \t "<<(int)angle<<" \t "<<(int)acc<<"\n";
   
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
@@ -77,11 +75,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   MatrixXd K = PHt * Si;
   
   //new estimate
-  //std::cout<<cnt<<":\t"<<(int)x_[0]<<" \t "<<(int)x_[1]<<" \t "<<(int)x_[2]<<" \t "<<(int)x_[3]<<" \t | \t "<<(int)distance<<" \t "<<(int)angle<<" \t "<<(int)acc<<"\n";
   x_ = x_ + (K * y);
-  
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  P_ = (I_ - K * H_) * P_;
 }
 

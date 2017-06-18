@@ -20,7 +20,6 @@ FusionEKF::FusionEKF() {
   R_laser_ = MatrixXd(2, 2);
   R_radar_ = MatrixXd(3, 3);
   H_laser_ = MatrixXd(2, 4);
-  H_radar_ = MatrixXd(3, 4); //jacobian
   
   //H
   H_laser_ <<
@@ -59,15 +58,15 @@ void FusionEKF::Init(const MeasurementPackage &measurement_pack){
   } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
     x << measurement_pack.raw_measurements_[0],measurement_pack.raw_measurements_[1],4,2;
   }
-  cout<<"Init x:"<<x<<"\n";
+  //cout<<"Init x:"<<x<<"\n";
 
   //state covariance matrix P
   MatrixXd P = MatrixXd(4, 4);
   P <<
   1, 0, 0, 0,
   0, 1, 0, 0,
-  0, 0, 10, 0,
-  0, 0, 0, 10;
+  0, 0, 1000, 0,
+  0, 0, 0, 1000;
   
   //the initial transition matrix F_
   MatrixXd F = MatrixXd(4, 4);
